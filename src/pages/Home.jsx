@@ -7,7 +7,7 @@ import DesignCard from "../components/DesignCard";
 import DesignModal from "../components/DesignModal";
 import EnquiryModal from "../components/EnquiryModal";
 import InfiniteScrollCards from "../components/InfiniteScrollCards";
-import { DESIGNS, SERVICES, WHATSAPP_NUMBER } from "../data";
+import { fetchDesigns, fetchServices, WHATSAPP_NUMBER } from "../data";
 import { useLang } from "../context/LangContext";
 import {
   useReveal,
@@ -62,8 +62,15 @@ const WA = (msg) =>
 
 export default function Home() {
   const { t } = useLang();
+  const [DESIGNS, setDESIGNS] = useState([]);
+  const [SERVICES, setSERVICES] = useState([]);
   const [selectedDesign, setSelectedDesign] = useState(null);
   const [showEnquiry, setShowEnquiry] = useState(false);
+
+  useEffect(() => {
+    fetchDesigns().then((data) => setDESIGNS(data));
+    fetchServices().then((data) => setSERVICES(data));
+  }, []);
 
   const heroRef = useRef(null);
   const heroTitleRef = useRef(null);
@@ -214,10 +221,7 @@ export default function Home() {
             }}
           >
             {/* Unga video file path correct-ah irukanum (Public folder) */}
-            <source
-              src="/bg-video.mp4"
-              type="video/mp4"
-            />
+            <source src="/bg-video.mp4" type="video/mp4" />
 
             {/* Fallback color if video/poster fails */}
             <div className="absolute inset-0 bg-[#0a0705]" />

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { gsap } from "gsap";
 import * as THREE from "three";
-import { DESIGNS, WHATSAPP_NUMBER } from "../data";
+import { fetchDesigns, WHATSAPP_NUMBER } from "../data";
 import EnquiryModal from "../components/EnquiryModal";
 import {
   ArrowLeft,
@@ -21,17 +21,28 @@ const WA = (id, title) =>
 export default function DesignDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const design = DESIGNS.find((d) => d.id === id);
+  const [DESIGNS, setDESIGNS] = useState([]);
+  const [designsLoaded, setDesignsLoaded] = useState(false);
   const [activeImg, setActiveImg] = useState(0);
   const [showEnquiry, setShowEnquiry] = useState(false);
   const [copied, setCopied] = useState(false);
   const [lightbox, setLightbox] = useState(false);
+
+  useEffect(() => {
+    fetchDesigns().then((data) => {
+      setDESIGNS(data);
+      setDesignsLoaded(true);
+    });
+  }, []);
+
+  const design = DESIGNS.find((d) => d.id === id);
 
   const heroRef = useRef(null);
   const infoRef = useRef(null);
   const canvasRef = useRef(null);
 
   useEffect(() => {
+    if (!designsLoaded) return;
     if (!design) {
       navigate("/gallery", { replace: true });
       return;
@@ -50,7 +61,7 @@ export default function DesignDetail() {
     );
 
     initThreeScene();
-  }, [design, id, navigate]);
+  }, [design, id, navigate, designsLoaded]);
 
   function initThreeScene() {
     const canvas = canvasRef.current;

@@ -1,3 +1,5 @@
+import { supabase } from "../supabase";
+
 export const WHATSAPP_NUMBER = "919751135325";
 export const SHOP_PHONE = "+91 9751135325";
 export const SHOP_ADDRESS =
@@ -34,27 +36,32 @@ export const TRANSLATIONS = {
   },
 };
 
-import { supabase } from "../supabase"; 
+export const fetchCategories = async () => {
+  const { data } = await supabase.from("categories").select("*");
+  return data || [];
+};
 
-const { data: designsData } = await supabase.from("designs").select("*");
-const { data: categoriesData } = await supabase.from("categories").select("*");
-const { data: servicesData } = await supabase.from("services").select("*");
+export const fetchServices = async () => {
+  const { data } = await supabase.from("services").select("*");
+  return data || [];
+};
 
-export const CATEGORIES = categoriesData || [];
-export const SERVICES = servicesData || [];
+export const fetchDesigns = async () => {
+  const { data } = await supabase.from("designs").select("*");
 
-export const DESIGNS = (designsData || []).map((item) => ({
-  id: item.id,
-  title: item.title,
-  category: item.category,
-  tag: item.tag,
-  image: item.image,
-  images: item.images,
-  description: item.description,
-  details: {
-    finish: item.finish,
-    size: item.size,
-    minQty: item.min_qty,
-    delivery: item.delivery,
-  },
-}));
+  return (data || []).map((item) => ({
+    id: item.id,
+    title: item.title,
+    category: item.category,
+    tag: item.tag,
+    image: item.image,
+    images: item.images,
+    description: item.description,
+    details: {
+      finish: item.finish,
+      size: item.size,
+      minQty: item.min_qty,
+      delivery: item.delivery,
+    },
+  }));
+};
