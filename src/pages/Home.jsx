@@ -25,38 +25,6 @@ import {
 
 gsap.registerPlugin(ScrollTrigger);
 
-const MARQUEE_ITEMS = [
-  "Wedding Cards",
-  "Visiting Cards",
-  "Flex Banners",
-  "Custom Designs",
-  "Digital Printing",
-  "Premium Quality",
-];
-
-const WHY_US = [
-  {
-    icon: Star,
-    title: "Premium Quality",
-    desc: "18+ years of printing excellence in Sattur, Virudhunagar.",
-  },
-  {
-    icon: Zap,
-    title: "Fast Turnaround",
-    desc: "Get your prints ready in 3–5 business days, same-day on select orders.",
-  },
-  {
-    icon: Award,
-    title: "Custom Designs",
-    desc: "In-house creative team crafts unique designs for every occasion.",
-  },
-  {
-    icon: Shield,
-    title: "Satisfaction Guarantee",
-    desc: "Not happy? We reprint at no cost — your trust is everything.",
-  },
-];
-
 const WA = (msg) =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 
@@ -66,6 +34,22 @@ export default function Home() {
   const [SERVICES, setSERVICES] = useState([]);
   const [selectedDesign, setSelectedDesign] = useState(null);
   const [showEnquiry, setShowEnquiry] = useState(false);
+
+  const MARQUEE_ITEMS = [
+    t.marquee_1,
+    t.marquee_2,
+    t.marquee_3,
+    t.marquee_4,
+    t.marquee_5,
+    t.marquee_6,
+  ];
+
+  const WHY_US = [
+    { icon: Star, title: t.why_1_title, desc: t.why_1_desc },
+    { icon: Zap, title: t.why_2_title, desc: t.why_2_desc },
+    { icon: Award, title: t.why_3_title, desc: t.why_3_desc },
+    { icon: Shield, title: t.why_4_title, desc: t.why_4_desc },
+  ];
 
   useEffect(() => {
     fetchDesigns().then((data) => setDESIGNS(data));
@@ -88,7 +72,6 @@ export default function Home() {
   const { trackRef, containerRef } = useHorizontalScroll();
 
   useEffect(() => {
-    // Hero entrance
     const tl = gsap.timeline({ delay: 2.1 });
     const words = heroTitleRef.current?.querySelectorAll(".hw");
     if (words?.length) {
@@ -124,7 +107,6 @@ export default function Home() {
         "-=0.2",
       );
 
-    // Stats counter
     const stats = statsRef.current?.querySelectorAll(".stat-num");
     stats?.forEach((stat) => {
       const target = parseInt(stat.dataset.target);
@@ -149,7 +131,6 @@ export default function Home() {
       });
     });
 
-    // Hero parallax
     gsap.to(".hero-bg-el", {
       yPercent: 28,
       ease: "none",
@@ -175,70 +156,31 @@ export default function Home() {
         ref={heroRef}
         className="relative min-h-screen flex items-center overflow-hidden"
       >
-        {/* Background layers */}
-        {/* <div className="hero-bg-el absolute inset-0 will-change-transform">
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 70% 60% at 65% 45%, rgba(201,136,16,0.10) 0%, transparent 100%)",
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)",
-              backgroundSize: "64px 64px",
-              opacity: 0.4,
-            }}
-          />
-        </div>
-
-        
-        <div
-          className="absolute inset-0 hidden lg:block"
-          style={{ zIndex: 1, pointerEvents: "none" }}
-        >
-          <ThreeCards />
-        </div> */}
-        {/* ════════════ HERO BACKGROUND (VIDEO LOOP) ════════════ */}
-        {/* ════════════ HERO BACKGROUND (VIDEO LOOP) ════════════ */}
         <div className="hero-bg-el absolute inset-0 z-0 h-[100svh]">
-          {/* Video Element */}
           <video
             autoPlay
             loop
             muted
             playsInline
-            /* FIX: Mobile-la video load aagura varaikkum 'poster' image thiriyum. 
-       Ithu blank screen varaama thadukkum. 
-    */
             poster="https://images.unsplash.com/photo-1616628188542-b8499b679093?q=80&w=2000"
             className="absolute inset-0 w-full h-full object-cover"
-            style={{
-              filter: "grayscale(20%) brightness(1)", // Mobile-la text innum nalla theriya brightness 0.6 kuduthuruken
-            }}
+            style={{ filter: "grayscale(20%) brightness(1)" }}
           >
-            {/* Unga video file path correct-ah irukanum (Public folder) */}
             <source src="/bg-video.mp4" type="video/mp4" />
-
-            {/* Fallback color if video/poster fails */}
-            <div className="absolute inset-0 bg-[#0a0705]" />
+            <div
+              className="absolute inset-0"
+              style={{ background: "var(--bg)" }}
+            />
           </video>
-
-          {/* Overlay Layer: Responsive Gradient */}
           <div
-            className="absolute inset-0 z-[1]"
+            className="hero-video-overlay-bottom absolute inset-0 z-[1]"
             style={{
               background:
                 "linear-gradient(to bottom, rgba(10,7,5,0.8) 0%, rgba(10,7,5,0.4) 50%, rgba(10,7,5,0.9) 100%)",
             }}
           />
-
-          {/* Desktop-ku mattum side gradient (Optional but looks premium) */}
           <div
-            className="absolute inset-0 z-[1] hidden md:block"
+            className="hero-video-overlay-side absolute inset-0 z-[1] hidden md:block"
             style={{
               background:
                 "linear-gradient(to right, rgba(10,7,5,0.9) 0%, transparent 100%)",
@@ -246,15 +188,12 @@ export default function Home() {
           />
         </div>
 
-        {/* Content */}
         <div className="container-xl relative z-10 pt-28 pb-20">
           <div className="max-w-2xl">
-            {/* Eyebrow */}
             <div className="eyebrow mb-8" style={{ width: "fit-content" }}>
-              <span>✦</span> Sattur's Finest Printer
+              <span>✦</span> {t.hero_eyebrow}
             </div>
 
-            {/* Title */}
             <div
               ref={heroTitleRef}
               className="heading-xl mb-6"
@@ -275,17 +214,14 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Sub */}
             <p
               ref={heroSubRef}
               className="body-lg mb-10 opacity-0"
               style={{ maxWidth: "34rem" }}
             >
-              {t.hero_sub} — Wedding Cards, Visiting Cards, Banners & Custom
-              Designs crafted with precision.
+              {t.hero_sub} — {t.hero_sub2}
             </p>
 
-            {/* CTA buttons */}
             <div ref={heroBtnsRef} className="flex flex-wrap gap-3">
               <Link to="/gallery" className="btn btn-primary btn-lg">
                 <span>{t.hero_cta}</span>
@@ -309,13 +245,8 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Trust line */}
             <div className="flex items-center gap-5 mt-10">
-              {[
-                "5000+ Happy Clients",
-                "18+ Years Experience",
-                "Fast Delivery",
-              ].map((item, i) => (
+              {[t.hero_trust1, t.hero_trust2, t.hero_trust3].map((item, i) => (
                 <div key={i} className="flex items-center gap-1.5">
                   <CheckCircle
                     size={13}
@@ -333,7 +264,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
         <div
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
           style={{ zIndex: 10 }}
@@ -342,7 +272,7 @@ export default function Home() {
             className="font-body text-xs tracking-[0.3em] uppercase"
             style={{ color: "var(--text4)" }}
           >
-            Scroll
+            {t.hero_scroll}
           </span>
           <div
             ref={scrollLineRef}
@@ -394,10 +324,10 @@ export default function Home() {
         <div className="container-xl">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { target: 5000, label: "Happy Clients", suffix: "+" },
-              { target: 18, label: "Years Experience", suffix: "+" },
-              { target: 200, label: "Design Templates", suffix: "+" },
-              { target: 50000, label: "Cards Printed", suffix: "+" },
+              { target: 5000, label: t.stat_clients, suffix: "+" },
+              { target: 18, label: t.stat_years, suffix: "+" },
+              { target: 200, label: t.stat_templates, suffix: "+" },
+              { target: 50000, label: t.stat_cards, suffix: "+" },
             ].map((stat, i) => (
               <div key={i} className="stat-block">
                 <div className="stat-num-display mb-1.5">
@@ -418,7 +348,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ════════════ TRENDING — Infinite 3D Scroll ════════════ */}
+      {/* ════════════ TRENDING ════════════ */}
       <section className="section-pad">
         <div className="container-xl mb-8">
           <div
@@ -426,11 +356,10 @@ export default function Home() {
             className="flex items-end justify-between opacity-0"
           >
             <div>
-              <div className="eyebrow mb-4">✦ Trending Now</div>
-              <h2 className="heading-lg">Popular Designs</h2>
+              <div className="eyebrow mb-4">✦ {t.trending_eyebrow}</div>
+              <h2 className="heading-lg">{t.trending_heading}</h2>
               <p className="body-sm mt-2" style={{ maxWidth: "28rem" }}>
-                Hover to preview all images · Click any card to view full
-                details & order
+                {t.trending_sub}
               </p>
             </div>
             <Link
@@ -444,18 +373,14 @@ export default function Home() {
                 (e.currentTarget.style.color = "var(--text3)")
               }
             >
-              View All <ArrowRight size={14} />
+              {t.trending_view_all} <ArrowRight size={14} />
             </Link>
           </div>
         </div>
-
-        {/* Infinite 3D auto-scroll strip — all screen sizes */}
         <InfiniteScrollCards designs={DESIGNS} />
-
-        {/* Mobile CTA */}
         <div className="container-xl mt-6 text-center md:hidden">
           <Link to="/gallery" className="btn btn-secondary">
-            Browse All Designs
+            {t.trending_browse}
           </Link>
         </div>
       </section>
@@ -465,12 +390,11 @@ export default function Home() {
         <div className="container-xl section-pad">
           <div ref={servicesTitleRef} className="text-center mb-14 opacity-0">
             <div className="eyebrow mb-4" style={{ display: "inline-flex" }}>
-              ✦ What We Offer
+              ✦ {t.services_eyebrow}
             </div>
-            <h2 className="heading-lg mb-4">Our Services</h2>
+            <h2 className="heading-lg mb-4">{t.services_heading}</h2>
             <div className="divider divider-center" />
           </div>
-
           <div
             ref={servicesRef}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
@@ -514,11 +438,10 @@ export default function Home() {
         <div className="container-xl section-pad">
           <div ref={whyTitleRef} className="text-center mb-14 opacity-0">
             <div className="eyebrow mb-4" style={{ display: "inline-flex" }}>
-              ✦ Our Promise
+              ✦ {t.why_eyebrow}
             </div>
-            <h2 className="heading-lg">Why Choose Us</h2>
+            <h2 className="heading-lg">{t.why_heading}</h2>
           </div>
-
           <div
             ref={whyRef}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
@@ -557,7 +480,6 @@ export default function Home() {
               padding: "clamp(2.5rem, 5vw, 4rem)",
             }}
           >
-            {/* Decorative gold glow */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -570,7 +492,6 @@ export default function Home() {
               style={{
                 borderLeft: "1px solid rgba(201,136,16,0.2)",
                 borderTop: "1px solid rgba(201,136,16,0.2)",
-                borderRadius: "0 0 0 0",
               }}
             />
             <div
@@ -583,26 +504,25 @@ export default function Home() {
 
             <div className="relative text-center max-w-2xl mx-auto">
               <div className="eyebrow mb-5" style={{ display: "inline-flex" }}>
-                ✦ Ready to Print?
+                ✦ {t.cta_eyebrow}
               </div>
               <h2 className="heading-lg mb-5">
-                Let's Create Something
+                {t.cta_heading1}
                 <br />
-                <span className="text-gold-gradient">Extraordinary</span>
+                <span className="text-gold-gradient">{t.cta_heading2}</span>
               </h2>
               <p
                 className="body-lg mb-10"
                 style={{ maxWidth: "32rem", margin: "0 auto 2.5rem" }}
               >
-                Share your vision with us — we'll design and print it to
-                perfection. Contact via WhatsApp for same-day response.
+                {t.cta_sub}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <button
                   onClick={() => setShowEnquiry(true)}
                   className="btn btn-primary btn-lg w-full sm:w-auto"
                 >
-                  <span>Get Free Consultation</span>
+                  <span>{t.cta_btn1}</span>
                   <ArrowRight size={16} />
                 </button>
                 <a
@@ -611,7 +531,7 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="btn btn-secondary btn-lg w-full sm:w-auto"
                 >
-                  WhatsApp Order
+                  {t.cta_btn2}
                 </a>
               </div>
             </div>
@@ -619,7 +539,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Modals */}
       {selectedDesign && (
         <DesignModal
           design={selectedDesign}

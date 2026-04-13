@@ -589,3 +589,40 @@ html.light .loader { background: #fafaf8; }
   .whatsapp-float { bottom: 1.25rem; right: 1.25rem; width: 50px; height: 50px; }
   .section-pad { padding-top: 3.5rem; padding-bottom: 3.5rem; }
 }
+
+
+/* ════════════════════════════════════════════════
+   LIGHT MODE — Hero video overlay fix
+   (video overlays were hardcoded dark rgba values)
+════════════════════════════════════════════════ */
+html.light .hero-video-overlay-bottom {
+  background: linear-gradient(
+    to bottom,
+    rgba(250,245,235,0.75) 0%,
+    rgba(250,245,235,0.35) 50%,
+    rgba(250,245,235,0.88) 100%
+  ) !important;
+}
+html.light .hero-video-overlay-side {
+  background: linear-gradient(
+    to right,
+    rgba(250,245,235,0.88) 0%,
+    transparent 100%
+  ) !important;
+}
+
+/* Light mode — DesignDetail page bg fix */
+html.light .design-detail-main {
+  background: var(--bg);
+}
+
+/* Light mode — form inputs placeholder color */
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: var(--text3);
+}
+
+/* Light mode — EnquiryModal backdrop */
+html.light .enquiry-modal-border {
+  border-color: var(--border);
+}

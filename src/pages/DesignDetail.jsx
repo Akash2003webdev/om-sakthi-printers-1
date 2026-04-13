@@ -4,6 +4,7 @@ import { gsap } from "gsap";
 import * as THREE from "three";
 import { fetchDesigns, WHATSAPP_NUMBER } from "../data";
 import EnquiryModal from "../components/EnquiryModal";
+import { useLang } from "../context/LangContext";
 import {
   ArrowLeft,
   ArrowRight,
@@ -20,6 +21,7 @@ const WA = (id, title) =>
 
 export default function DesignDetail() {
   const { id } = useParams();
+  const { t } = useLang();
   const navigate = useNavigate();
   const [DESIGNS, setDESIGNS] = useState([]);
   const [designsLoaded, setDesignsLoaded] = useState(false);
@@ -166,7 +168,7 @@ export default function DesignDetail() {
   ).slice(0, 4);
 
   return (
-    <main className="min-h-screen bg-[var(--nav-bg)] text-[var(--text-main)] pt-24 pb-32">
+    <main className="min-h-screen pt-24 pb-32" style={{ background: "var(--bg)", color: "var(--text)" }}>
       {/* ── Top Navigation ── */}
       <div className="container-xl px-6 mb-8">
         <div className="flex items-center justify-between">
@@ -182,9 +184,9 @@ export default function DesignDetail() {
           </nav>
           <button
             onClick={copyId}
-            className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold bg-white/5 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all"
+            className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full transition-all" style={{ background: "var(--glass)", border: "1px solid var(--border)", color: "var(--text3)" }}
           >
-            {copied ? "Copied ID!" : "Share Design"} <Share2 size={12} />
+            {copied ? t.detail_copied : t.detail_share} <Share2 size={12} />
           </button>
         </div>
       </div>
@@ -193,7 +195,7 @@ export default function DesignDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           {/* ── LEFT: Showcase (Col 1-7) ── */}
           <div ref={heroRef} className="lg:col-span-7 space-y-8">
-            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-black/20 border border-white/5 group shadow-2xl">
+            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden group shadow-2xl" style={{ background: "var(--surface2)", border: "1px solid var(--border)" }}>
               {imagesList.map((img, i) => (
                 <img
                   key={i}
@@ -268,16 +270,16 @@ export default function DesignDetail() {
 
             {/* Specifications Cards */}
             <div className="grid grid-cols-2 gap-4">
-              <SpecBox label="Dimensions" value={design.details?.size} />
-              <SpecBox label="Finish Type" value={design.details?.finish} />
-              <SpecBox label="Quantity" value={design.details?.minQty} />
+              <SpecBox label={t.detail_dimensions} value={design.details?.size} />
+              <SpecBox label={t.detail_finish} value={design.details?.finish} />
+              <SpecBox label={t.detail_quantity} value={design.details?.minQty} />
               <SpecBox label="Est. Delivery" value={design.details?.delivery} />
             </div>
 
             {/* Interactive Preview Section */}
-            <div className="p-1 rounded-[2rem] bg-gradient-to-br from-[var(--gold-main)]/20 to-transparent border border-white/5">
-              <div className="bg-[var(--nav-bg)] rounded-[1.9rem] overflow-hidden">
-                <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-white/5">
+            <div className="p-1 rounded-[2rem]" style={{ background: "linear-gradient(135deg, rgba(201,136,16,0.15), transparent)", border: "1px solid var(--border)" }}>
+              <div className="rounded-[1.9rem] overflow-hidden" style={{ background: "var(--nav-bg)" }}>
+                <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)", background: "var(--glass)" }}>
                   <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--gold-main)]">
                     Live 3D View
                   </span>
@@ -301,14 +303,14 @@ export default function DesignDetail() {
               </div>
               <div className="flex items-center gap-3 text-sm opacity-80">
                 <MessageSquare size={18} className="text-[var(--gold-main)]" />
-                <span>Direct Support via WhatsApp</span>
+                <span>{t.detail_whatsapp}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* RELATED SECTION */}
-        <section className="mt-32 pt-20 border-t border-white/5">
+        <section className="mt-32 pt-20" style={{ borderTop: "1px solid var(--border)" }}>
           <div className="flex items-center justify-between mb-12">
             <h2 className="font-display text-3xl font-bold">
               Similar Creations
@@ -330,7 +332,7 @@ export default function DesignDetail() {
                 }}
                 className="group cursor-pointer"
               >
-                <div className="aspect-[3/4] rounded-3xl overflow-hidden bg-white/5 mb-4 border border-white/5">
+                <div className="aspect-[3/4] rounded-3xl overflow-hidden mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
                   <img
                     src={design.image}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -352,12 +354,12 @@ export default function DesignDetail() {
       {/* ── FIXED ACTION BAR (Mobile & Desktop) ── */}
       <div className="fixed bottom-0 left-0 right-0 z-[600] p-4 md:p-6 pointer-events-none">
         <div className="container-xl flex justify-center">
-          <div className="w-full max-w-2xl bg-white/10 backdrop-blur-2xl border border-white/20 p-2 md:p-3 rounded-[2rem] shadow-2xl pointer-events-auto flex items-center gap-3">
+          <div className="w-full max-w-2xl backdrop-blur-2xl p-2 md:p-3 rounded-[2rem] shadow-2xl pointer-events-auto flex items-center gap-3" style={{ background: "var(--glass)", border: "1px solid var(--border)" }}>
             <button
               onClick={() => setShowEnquiry(true)}
               className="flex-[2] bg-[var(--gold-main)] text-black h-14 md:h-16 rounded-[1.5rem] font-bold text-sm md:text-base hover:bg-[var(--gold-light)] transition-all shadow-lg active:scale-95"
             >
-              Enquire Now
+              {t.enquire_btn}
             </button>
             <a
               href={WA(design.id, design.title)}
