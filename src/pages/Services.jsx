@@ -170,7 +170,7 @@ export default function Services() {
                     <ArrowRight size={13} />
                   </button>
                   <a
-                    href={`https://wa.me/919876543210?text=${encodeURIComponent(`Hi, I'm interested in ${svc.title}. Can you help?`)}`}
+                    href={`https://wa.me/919751135325?text=${encodeURIComponent(`Hi, I'm interested in ${svc.title}. Can you help?`)}`}
                     target="_blank" rel="noopener noreferrer"
                     className="btn-outline flex items-center gap-2"
                   >
