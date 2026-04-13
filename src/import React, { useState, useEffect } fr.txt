@@ -1,0 +1,130 @@
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabase';
+
+const AdminPage = () => {
+  const [designs, setDesigns] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    id: '', title: '', category: 'wedding', tag: '',
+    image: '', // Main Thumbnail
+    images: [], // Gallery Array
+    description: '', finish: '', size: '', min_qty: '', delivery: ''
+  });
+
+  useEffect(() => { fetchDesigns(); }, []);
+
+  const fetchDesigns = async () => {
+    const { data } = await supabase.from('designs').select('*');
+    setDesigns(data || []);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // 1. இமேஜ் அப்லோட் செய்யும் முக்கிய ஃபங்க்ஷன்
+  const handleFileUpload = async (event) => {
+    try {
+      setUploading(true);
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      const newImageUrls = [...formData.images];
+
+      for (const file of files) {
+        // தனித்துவமான ஃபைல் பெயர் (ID + Timestamp)
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${formData.id || 'design'}-${Math.random()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        // Supabase Bucket-க்கு அப்லோட் செய்தல்
+        let { error: uploadError } = await supabase.storage
+          .from('design-images')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        // Public URL-ஐ பெறுதல்
+        const { data: { publicUrl } } = supabase.storage
+          .from('design-images')
+          .getPublicUrl(filePath);
+
+        newImageUrls.push(publicUrl);
+      }
+
+      // ஃபார்ம் டேட்டாவில் URL-களைச் சேர்த்தல்
+      setFormData(prev => ({ 
+        ...prev, 
+        images: newImageUrls,
+        image: prev.image || newImageUrls[0] // முதல் இமேஜை மெயின் இமேஜாக செட் செய்தல்
+      }));
+
+      alert("Images uploaded successfully!");
+    } catch (error) {
+      alert('Error uploading image: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.id) return alert("Please enter ID first");
+
+    const { error } = await supabase.from('designs').insert([formData]);
+
+    if (error) {
+      alert("Error: " + error.message);
+    } else {
+      alert("Design Added Successfully! 🎉");
+      setFormData({ id: '', title: '', category: 'wedding', tag: '', image: '', images: [], description: '', finish: '', size: '', min_qty: '', delivery: '' });
+      fetchDesigns();
+    }
+  };
+
+  return (
+    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+      <h2>Om Sakthi Printers - Admin Dashboard</h2>
+      
+      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '15px', border: '1px solid #ddd', padding: '20px', borderRadius: '8px' }}>
+        <h3>Add New Design</h3>
+        
+        <input name="id" placeholder="ID (e.g., WED-200)" onChange={handleChange} value={formData.id} required />
+        <input name="title" placeholder="Design Title" onChange={handleChange} value={formData.title} required />
+        
+        <label>Upload Images (Multiple allowed):</label>
+        <input type="file" multiple accept="image/*" onChange={handleFileUpload} disabled={uploading} />
+        {uploading && <p style={{ color: 'orange' }}>Uploading images, please wait...</p>}
+
+        {/* அப்லோட் செய்யப்பட்ட படங்களின் பிரிவியூ */}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {formData.images.map((url, i) => (
+            <img key={i} src={url} alt="preview" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '5px' }} />
+          ))}
+        </div>
+
+        <select name="category" onChange={handleChange} value={formData.category}>
+          <option value="wedding">Wedding Cards</option>
+          <option value="visiting">Visiting Cards</option>
+          <option value="banner">Banners & Flex</option>
+        </select>
+
+        <input name="tag" placeholder="Tag (Trending/New/Premium)" onChange={handleChange} value={formData.tag} />
+        <textarea name="description" placeholder="Description" onChange={handleChange} value={formData.description} rows="3" />
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <input name="finish" placeholder="Finish (e.g. Matte)" onChange={handleChange} value={formData.finish} />
+          <input name="size" placeholder="Size (e.g. 5x7)" onChange={handleChange} value={formData.size} />
+          <input name="min_qty" placeholder="Min Qty" onChange={handleChange} value={formData.min_qty} />
+          <input name="delivery" placeholder="Delivery" onChange={handleChange} value={formData.delivery} />
+        </div>
+
+        <button type="submit" disabled={uploading} style={{ padding: '12px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+          Save Design to Database
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default AdminPage;
