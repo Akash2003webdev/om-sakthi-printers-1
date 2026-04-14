@@ -3,9 +3,36 @@ import { Link, useLocation } from "react-router-dom";
 import { gsap } from "gsap";
 import { useLang } from "../context/LangContext";
 import { useTheme } from "../context/ThemeContext";
-import { Menu, X, Moon, Sun, Globe, MessageCircle } from "lucide-react";
+import { useAdmin } from "../context/AdminContext";
+import {
+  Menu,
+  X,
+  Moon,
+  Sun,
+  Globe,
+  MessageCircle,
+  LayoutDashboard,
+} from "lucide-react";
+import AdminLoginModal from "./AdminLoginModal";
 
 export default function Navbar() {
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const longPressTimer = useRef(null);
+  const { isAdmin } = useAdmin();
+
+  const handleLogoMouseDown = () => {
+    longPressTimer.current = setTimeout(() => {
+      if (!isAdmin) setShowAdminLogin(true);
+    }, 800);
+  };
+  const handleLogoMouseUp = () => clearTimeout(longPressTimer.current);
+  const handleLogoTouchStart = () => {
+    longPressTimer.current = setTimeout(() => {
+      if (!isAdmin) setShowAdminLogin(true);
+    }, 800);
+  };
+  const handleLogoTouchEnd = () => clearTimeout(longPressTimer.current);
+
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef(null);
@@ -71,7 +98,16 @@ export default function Navbar() {
       >
         <div className="container-xl mx-auto px-4 h-full flex items-center justify-between">
           {/* ── Logo ── */}
-          <Link to="/" className="flex items-center gap-2.5 shrink-0 z-[510]">
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 shrink-0 z-[510]"
+            onMouseDown={handleLogoMouseDown}
+            onMouseUp={handleLogoMouseUp}
+            onMouseLeave={handleLogoMouseUp}
+            onTouchStart={handleLogoTouchStart}
+            onTouchEnd={handleLogoTouchEnd}
+            style={{ userSelect: "none", WebkitUserSelect: "none" }}
+          >
             <div
               className="flex items-center justify-center font-display font-bold text-lg rounded-full"
               style={{
@@ -213,6 +249,9 @@ export default function Navbar() {
           </div>
         </div>
       </header>
+      {showAdminLogin && (
+        <AdminLoginModal onClose={() => setShowAdminLogin(false)} />
+      )}
     </>
   );
 }

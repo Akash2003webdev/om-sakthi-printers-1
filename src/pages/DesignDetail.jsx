@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Share2,
-  CheckCircle,
   ZoomIn,
   ChevronRight,
   MessageSquare,
@@ -54,12 +53,12 @@ export default function DesignDetail() {
     gsap.fromTo(
       heroRef.current,
       { opacity: 0, x: -20 },
-      { opacity: 1, x: 0, duration: 0.8 },
+      { opacity: 1, x: 0, duration: 0.8 }
     );
     gsap.fromTo(
       infoRef.current,
       { opacity: 0, x: 20 },
-      { opacity: 1, x: 0, duration: 0.8, delay: 0.2 },
+      { opacity: 1, x: 0, duration: 0.8, delay: 0.2 }
     );
 
     initThreeScene();
@@ -68,8 +67,8 @@ export default function DesignDetail() {
   function initThreeScene() {
     const canvas = canvasRef.current;
     if (!canvas || !design) return;
-    const w = canvas.clientWidth,
-      h = canvas.clientHeight;
+    const w = canvas.clientWidth;
+    const h = canvas.clientHeight;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
     camera.position.z = 4;
@@ -88,14 +87,15 @@ export default function DesignDetail() {
       imagesList.map(
         (url) =>
           new Promise((res) =>
-            loader.load(url, res, undefined, () => res(null)),
-          ),
-      ),
+            loader.load(url, res, undefined, () => res(null))
+          )
+      )
     ).then((textures) => {
       const validTextures = textures.filter(Boolean);
       if (!validTextures.length) return;
       const cards = [];
       const cardGeo = new THREE.BoxGeometry(1.6, 2.2, 0.05);
+
       validTextures.forEach((tex, i) => {
         tex.colorSpace = THREE.SRGBColorSpace;
         const frontMat = new THREE.MeshStandardMaterial({
@@ -121,13 +121,14 @@ export default function DesignDetail() {
         scene.add(mesh);
         cards.push({ mesh, baseY: mesh.position.y });
       });
+
       scene.add(new THREE.AmbientLight(0xffffff, 1));
       const keyLight = new THREE.DirectionalLight(0xffffff, 1.5);
       keyLight.position.set(2, 4, 5);
       scene.add(keyLight);
 
-      let mx = 0,
-        my = 0;
+      let mx = 0;
+      let my = 0;
       const onMove = (e) => {
         const rect = canvas.getBoundingClientRect();
         mx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
@@ -147,6 +148,7 @@ export default function DesignDetail() {
         renderer.render(scene, camera);
       };
       animate();
+
       return () => {
         cancelAnimationFrame(frameId);
         canvas.removeEventListener("mousemove", onMove);
@@ -162,14 +164,18 @@ export default function DesignDetail() {
   };
 
   if (!design) return null;
+
   const imagesList = design.images || [design.image];
   const related = DESIGNS.filter(
-    (d) => d.category === design?.category && d.id !== id,
+    (d) => d.category === design?.category && d.id !== id
   ).slice(0, 4);
 
   return (
-    <main className="min-h-screen pt-24 pb-32" style={{ background: "var(--bg)", color: "var(--text)" }}>
-      {/* ── Top Navigation ── */}
+    <main
+      className="min-h-screen pt-24 pb-32"
+      style={{ background: "var(--bg)", color: "var(--text)" }}
+    >
+      {/* Top Navigation */}
       <div className="container-xl px-6 mb-8">
         <div className="flex items-center justify-between">
           <nav className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold opacity-50">
@@ -184,41 +190,56 @@ export default function DesignDetail() {
           </nav>
           <button
             onClick={copyId}
-            className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full transition-all" style={{ background: "var(--glass)", border: "1px solid var(--border)", color: "var(--text3)" }}
+            className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold px-3 py-1.5 rounded-full transition-all"
+            style={{
+              background: "var(--glass)",
+              border: "1px solid var(--border)",
+              color: "var(--text3)",
+            }}
           >
-            {copied ? t.detail_copied : t.detail_share} <Share2 size={12} />
+            {copied ? t.detail_copied : t.detail_share}
+            <Share2 size={12} />
           </button>
         </div>
       </div>
 
       <div className="container-xl px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* ── LEFT: Showcase (Col 1-7) ── */}
+
+          {/* LEFT: Showcase */}
           <div ref={heroRef} className="lg:col-span-7 space-y-8">
-            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden group shadow-2xl" style={{ background: "var(--surface2)", border: "1px solid var(--border)" }}>
+            <div
+              className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden group shadow-2xl"
+              style={{
+                background: "var(--surface2)",
+                border: "1px solid var(--border)",
+              }}
+            >
               {imagesList.map((img, i) => (
                 <img
                   key={i}
                   src={img}
-                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${i === activeImg ? "opacity-100 scale-100" : "opacity-0 scale-105"}`}
+                  className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 ${
+                    i === activeImg
+                      ? "opacity-100 scale-100"
+                      : "opacity-0 scale-105"
+                  }`}
                   alt=""
                 />
               ))}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-
               <button
                 onClick={() => setLightbox(true)}
                 className="absolute bottom-6 right-6 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 transition-all"
               >
                 <ZoomIn size={20} />
               </button>
-
               {imagesList.length > 1 && (
                 <div className="absolute inset-x-6 top-1/2 -translate-y-1/2 flex justify-between">
                   <button
                     onClick={() =>
                       setActiveImg(
-                        (p) => (p - 1 + imagesList.length) % imagesList.length,
+                        (p) => (p - 1 + imagesList.length) % imagesList.length
                       )
                     }
                     className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-lg border border-white/10 flex items-center justify-center hover:bg-[var(--gold-main)] transition-all"
@@ -237,27 +258,27 @@ export default function DesignDetail() {
               )}
             </div>
 
-            {/* Thumbnails Swiper-style */}
+            {/* Thumbnails */}
             {imagesList.length > 1 && (
               <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                 {imagesList.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setActiveImg(i)}
-                    className={`relative w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all ${i === activeImg ? "border-[var(--gold-main)]" : "border-transparent opacity-40"}`}
+                    className={`relative w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all ${
+                      i === activeImg
+                        ? "border-[var(--gold-main)]"
+                        : "border-transparent opacity-40"
+                    }`}
                   >
-                    <img
-                      src={img}
-                      className="w-full h-full object-cover"
-                      alt=""
-                    />
+                    <img src={img} className="w-full h-full object-cover" alt="" />
                   </button>
                 ))}
               </div>
             )}
           </div>
 
-          {/* ── RIGHT: Content (Col 8-12) ── */}
+          {/* RIGHT: Content */}
           <div ref={infoRef} className="lg:col-span-5 space-y-10">
             <div>
               <h1 className="font-display text-4xl md:text-6xl font-bold leading-tight mb-6">
@@ -268,7 +289,7 @@ export default function DesignDetail() {
               </p>
             </div>
 
-            {/* Specifications Cards */}
+            {/* Spec Cards */}
             <div className="grid grid-cols-2 gap-4">
               <SpecBox label={t.detail_dimensions} value={design.details?.size} />
               <SpecBox label={t.detail_finish} value={design.details?.finish} />
@@ -276,10 +297,26 @@ export default function DesignDetail() {
               <SpecBox label="Est. Delivery" value={design.details?.delivery} />
             </div>
 
-            {/* Interactive Preview Section */}
-            <div className="p-1 rounded-[2rem]" style={{ background: "linear-gradient(135deg, rgba(201,136,16,0.15), transparent)", border: "1px solid var(--border)" }}>
-              <div className="rounded-[1.9rem] overflow-hidden" style={{ background: "var(--nav-bg)" }}>
-                <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid var(--border)", background: "var(--glass)" }}>
+            {/* 3D Preview */}
+            <div
+              className="p-1 rounded-[2rem]"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(201,136,16,0.15), transparent)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <div
+                className="rounded-[1.9rem] overflow-hidden"
+                style={{ background: "var(--nav-bg)" }}
+              >
+                <div
+                  className="px-6 py-4 flex items-center justify-between"
+                  style={{
+                    borderBottom: "1px solid var(--border)",
+                    background: "var(--glass)",
+                  }}
+                >
                   <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--gold-main)]">
                     Live 3D View
                   </span>
@@ -307,14 +344,16 @@ export default function DesignDetail() {
               </div>
             </div>
           </div>
+
         </div>
 
         {/* RELATED SECTION */}
-        <section className="mt-32 pt-20" style={{ borderTop: "1px solid var(--border)" }}>
+        <section
+          className="mt-32 pt-20"
+          style={{ borderTop: "1px solid var(--border)" }}
+        >
           <div className="flex items-center justify-between mb-12">
-            <h2 className="font-display text-3xl font-bold">
-              Similar Creations
-            </h2>
+            <h2 className="font-display text-3xl font-bold">Similar Creations</h2>
             <Link
               to="/gallery"
               className="text-sm font-bold text-[var(--gold-main)] border-b border-[var(--gold-main)] pb-1"
@@ -322,6 +361,7 @@ export default function DesignDetail() {
               View Gallery
             </Link>
           </div>
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {related.map((d) => (
               <div
@@ -330,16 +370,22 @@ export default function DesignDetail() {
                   navigate(`/design/${d.id}`);
                   window.scrollTo(0, 0);
                 }}
-                className="group cursor-pointer"
+                className="group cursor-pointer flex flex-col"
               >
-                <div className="aspect-[3/4] rounded-3xl overflow-hidden mb-4" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+                <div
+                  className="aspect-[3/4] w-full rounded-3xl overflow-hidden mb-4"
+                  style={{
+                    background: "var(--surface)",
+                    border: "1px solid var(--border)",
+                  }}
+                >
                   <img
-                    src={design.image}
+                    src={d.image}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    alt=""
+                    alt={d.title}
                   />
                 </div>
-                <h4 className="font-bold opacity-80 group-hover:text-[var(--gold-main)] transition-colors">
+                <h4 className="font-bold opacity-80 group-hover:text-[var(--gold-main)] transition-colors truncate">
                   {d.title}
                 </h4>
                 <p className="text-[10px] opacity-40 uppercase tracking-widest mt-1">
@@ -349,12 +395,19 @@ export default function DesignDetail() {
             ))}
           </div>
         </section>
+
       </div>
 
-      {/* ── FIXED ACTION BAR (Mobile & Desktop) ── */}
+      {/* FIXED ACTION BAR */}
       <div className="fixed bottom-0 left-0 right-0 z-[600] p-4 md:p-6 pointer-events-none">
         <div className="container-xl flex justify-center">
-          <div className="w-full max-w-2xl backdrop-blur-2xl p-2 md:p-3 rounded-[2rem] shadow-2xl pointer-events-auto flex items-center gap-3" style={{ background: "var(--glass)", border: "1px solid var(--border)" }}>
+          <div
+            className="w-full max-w-2xl backdrop-blur-2xl p-2 md:p-3 rounded-[2rem] shadow-2xl pointer-events-auto flex items-center gap-3"
+            style={{
+              background: "var(--glass)",
+              border: "1px solid var(--border)",
+            }}
+          >
             <button
               onClick={() => setShowEnquiry(true)}
               className="flex-[2] bg-[var(--gold-main)] text-black h-14 md:h-16 rounded-[1.5rem] font-bold text-sm md:text-base hover:bg-[var(--gold-light)] transition-all shadow-lg active:scale-95"
@@ -388,6 +441,7 @@ export default function DesignDetail() {
         </div>
       )}
 
+      {/* Enquiry Modal */}
       {showEnquiry && (
         <EnquiryModal design={design} onClose={() => setShowEnquiry(false)} />
       )}
