@@ -18,12 +18,7 @@ export default function Footer() {
           {/* Brand col */}
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2.5 mb-5" style={{ width: 'fit-content' }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: '50%',
-                background: 'linear-gradient(135deg,#f3d98a,#c98810)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontFamily: 'Playfair Display, serif', fontWeight: 700, fontSize: '1.125rem', color: '#0a0705',
-              }}>ॐ</div>
+              <img src="/favicon.svg" alt="Om Sakthi Logo" style={{ width: 40, height: 40, borderRadius: '50%', display: 'block' }} />
               <div>
                 <div className="font-display font-semibold text-base leading-tight text-gold-gradient">Om Sakthi Printers</div>
                 <div className="font-body text-xs tracking-widest uppercase" style={{ color: 'var(--text4)', fontSize: 10 }}>Sattur, Tamil Nadu</div>

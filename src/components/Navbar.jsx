@@ -108,18 +108,11 @@ export default function Navbar() {
             onTouchEnd={handleLogoTouchEnd}
             style={{ userSelect: "none", WebkitUserSelect: "none" }}
           >
-            <div
-              className="flex items-center justify-center font-display font-bold text-lg rounded-full"
-              style={{
-                width: 40,
-                height: 40,
-                background: "linear-gradient(135deg, #f3d98a 0%, #c98810 100%)",
-                boxShadow: "0 2px 10px rgba(201,136,16,0.3)",
-                color: "#0a0705",
-              }}
-            >
-              ॐ
-            </div>
+            <img
+              src="/favicon.svg"
+              alt="Om Sakthi Logo"
+              style={{ width: 50, height: 50, borderRadius: '50%', display: 'block' }}
+            />
             <div className="leading-none">
               <div className="font-display font-semibold text-lg text-gold-gradient">
                 Om Sakthi

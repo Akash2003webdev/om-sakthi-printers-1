@@ -14,7 +14,7 @@ export default function Loader({ onComplete }) {
     tl.to(progressRef.current, { width: '100%', duration: 1.6, ease: 'power2.inOut' })
       .to(countRef.current,    { textContent: 100, duration: 1.6, snap: { textContent: 1 }, ease: 'power2.inOut' }, '<')
       .to(contentRef.current,  { opacity: 0, y: -16, duration: 0.35, ease: 'power2.in' })
-      .to(loaderRef.current,   { yPercent: -100, duration: 0.75, ease: 'power4.inOut', onComplete })
+      .to(loaderRef.current,   { yPercent: -100, duration: 0.85, ease: 'power4.inOut', onComplete })
   }, [])
 
   return (
@@ -25,7 +25,7 @@ export default function Loader({ onComplete }) {
       <div ref={contentRef} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', position: 'relative' }}>
 
         {/* Symbol */}
-        <div className="font-display text-gold-gradient" style={{ fontSize: '5rem', lineHeight: 1, animation: 'float 3s ease-in-out infinite' }}>ॐ</div>
+        <img src="/favicon.svg" alt="Om Sakthi Logo" style={{ width: 150, height: 150, borderRadius: '50%', animation: 'float 3s ease-in-out infinite' }} />
 
         {/* Name */}
         <div style={{ textAlign: 'center' }}>

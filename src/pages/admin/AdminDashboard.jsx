@@ -154,18 +154,54 @@ function StatCard({ icon: Icon, label, value, color, sub }) {
 // FORM WRAPPER MODAL
 // ─────────────────────────────────────────────────────────────
 function FormCard({ title, onClose, onSave, saving, children }) {
+  useEffect(() => {
+    // Lock background scroll
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-[9997] flex items-start justify-center p-4 pt-16 overflow-y-auto"
-      style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)' }}>
-      <div className="w-full max-w-2xl rounded-2xl mb-10"
-        style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', boxShadow: '0 30px 80px rgba(0,0,0,0.5)' }}>
-        <div style={{ height: 3, background: 'linear-gradient(90deg,#c98810,#f3d98a,#c98810)', borderRadius: '16px 16px 0 0' }} />
-        <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
-          <h3 className="font-display font-bold" style={{ color: 'var(--text-main)' }}>{title}</h3>
-          <button onClick={onClose} className="p-1.5 rounded-lg" style={{ color: 'var(--text4)' }}><X size={18} /></button>
+    <div
+      className="fixed inset-0 z-[9997]"
+      style={{ background: 'rgba(0,0,0,0.72)', backdropFilter: 'blur(10px)' }}
+      onClick={onClose}
+    >
+      {/* Modal box — fixed height, internal scroll only */}
+      <div
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '100%',
+          maxWidth: '680px',
+          maxHeight: '90vh',
+          display: 'flex',
+          flexDirection: 'column',
+          borderRadius: '1rem',
+          background: 'var(--card-bg)',
+          border: '1px solid var(--border)',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.5)',
+          overflow: 'hidden',
+        }}
+      >
+      <div className="w-full" style={{ display: 'flex', flexDirection: 'column', maxHeight: '90vh' }}>
+        {/* ── Fixed Header ── */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ height: 3, background: 'linear-gradient(90deg,#c98810,#f3d98a,#c98810)' }} />
+          <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border)' }}>
+            <h3 className="font-display font-bold" style={{ color: 'var(--text-main)' }}>{title}</h3>
+            <button onClick={onClose} className="p-1.5 rounded-lg" style={{ color: 'var(--text4)' }}><X size={18} /></button>
+          </div>
         </div>
-        <div className="p-6">{children}</div>
-        <div className="px-6 pb-6 flex gap-3 justify-end" style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+        {/* ── Scrollable Body ── */}
+        <div className="p-6" style={{ overflowY: 'auto', flex: 1 }}>
+          {children}
+        </div>
+        {/* ── Fixed Footer ── */}
+        <div className="px-6 py-4 flex gap-3 justify-end" style={{ borderTop: '1px solid var(--border)', flexShrink: 0 }}>
           <button onClick={onClose} className="btn btn-secondary">Cancel</button>
           <button onClick={onSave} disabled={saving}
             className="btn btn-primary flex items-center gap-2 min-w-[120px] justify-center"
@@ -174,6 +210,7 @@ function FormCard({ title, onClose, onSave, saving, children }) {
             {saving ? 'Saving...' : 'Save'}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -248,12 +285,15 @@ export default function AdminDashboard() {
       <div className="sticky top-[80px] z-50 px-4 py-3 flex items-center justify-between"
         style={{ background: 'var(--nav-bg)', borderBottom: '1px solid var(--border)', backdropFilter: 'blur(20px)' }}>
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: 'linear-gradient(135deg,#c98810,#f3d98a)' }}>
-            <LayoutDashboard size={14} style={{ color: '#0a0705' }} />
+          <img src="/favicon.svg" alt="Om Sakthi Logo" style={{ width: 34, height: 34, borderRadius: '50%', display: 'block', flexShrink: 0 }} />
+          <div className="leading-none">
+            <div className="font-display font-semibold text-sm" style={{ color: 'var(--gold-main)' }}>
+              Om Sakthi
+            </div>
+            <div className="text-[10px] tracking-widest uppercase opacity-70" style={{ color: 'var(--text-main)' }}>
+              Admin Panel
+            </div>
           </div>
-          <span className="font-display font-bold text-sm" style={{ color: 'var(--gold-main)' }}>Admin Panel</span>
-          <span className="hidden sm:inline text-xs" style={{ color: 'var(--text4)' }}>· Om Sakthi Printers</span>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={loadAll} title="Refresh"
@@ -470,17 +510,17 @@ function DesignsTab({ designs, categories, onRefresh, showToast, setConfirm }) {
 // ─────────────────────────────────────────────────────────────
 function DesignForm({ item, categories, onClose, onSaved }) {
   const isEdit = !!item;
-  const existingExtra = item?.images?.filter(Boolean) || [];
-  while (existingExtra.length < 2) existingExtra.push('');
+  // images array stores [main, img2, img3] — so index 1 and 2 are the extra images
+  const existingImages = item?.images?.filter(Boolean) || [];
 
   const [form, setForm] = useState({
     id:          item?.id          || '',
     title:       item?.title       || '',
     category:    item?.category    || '',
     tag:         item?.tag         || '',
-    image:       item?.image       || '',
-    img2:        existingExtra[0]  || '',
-    img3:        existingExtra[1]  || '',
+    image:       item?.image       || '',        // same as images[0]
+    img2:        existingImages[1] || '',        // images[1]
+    img3:        existingImages[2] || '',        // images[2]
     description: item?.description || '',
     finish:      item?.finish      || '',
     size:        item?.size        || '',
@@ -494,7 +534,8 @@ function DesignForm({ item, categories, onClose, onSaved }) {
     if (!form.title.trim()) { alert('Title required'); return; }
     if (!isEdit && !form.id.trim()) { alert('Design ID required'); return; }
 
-    const imagesArr = [form.img2, form.img3].filter(Boolean);
+    // images array = [main, img2, img3] — all three stored together
+    const imagesArr = [form.image, form.img2, form.img3].filter(Boolean);
     const payload = {
       title:       form.title.trim(),
       category:    form.category    || null,
